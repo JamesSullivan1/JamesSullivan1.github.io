@@ -13,7 +13,7 @@ Calgary. He is currently maintaining a GPA of 3.73/4.0.
 
 James is involved with research in his field through the 
 [Trustworthy Systems Group](http://tsg.cpsc.ucalgary.ca/), where he
-studies the difficulty in the cooperation of security mechanisms.
+studies the difficulties of cooperation in security mechanisms.
 He also works on practical cybersecurity training by developing 
 exercises that can be deployed in and out of the classroom to
 teach students active analysis techniques of insecure systems.
@@ -23,7 +23,7 @@ Wado Ryu Karate, and holds a 2nd Degree Black belt through the
 Japanese Karatedo Federation. His other interests include
 music, technology, hiking, and travel.
 
-[Formal CV]()
+[Curriculum Vitae](http://JamesSullivan1.github.io/cv.html)
 
 Contact
 ======
