@@ -1,12 +1,9 @@
 ---
 layout: page 
-title: "Cv"
+title: "CV"
 description: "Curriculum Vitae"
 ---
 {% include JB/setup %}
-
-Curriculum Vitae
-================
 
 Academic
 -------
