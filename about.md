@@ -32,9 +32,9 @@ Contact
 
 
 ### Twitter
-[@_JSulliv_](https://twitter.com/_JSullivan_)
+[@\_JSulliv\_](https://www.twitter.com/{{ site.author.twitter}})
 
 ### Github
-[JamesSullivan1](https://github.com/JamesSullivan1)
+[JamesSullivan1](https://www.github.com/{{ site.author.github}})
 
 
