@@ -7,8 +7,6 @@ tags: []
 ---
 {% include JB/setup %}
 
-<<<<<<< HEAD
-
 test 
 
 =======
@@ -26,4 +24,3 @@ With which I had much greater luck. I could not yet read arbitrary memory, but t
 What is ptrace(2)?
 ---------------
 ptrace(2) is a UNIX system call that enables a process to *trace execution* of another process, and *examine its memory and registers*. This is an extremely powerful (and interesting) system call that enables many of the tools that we use for binary inspection and debugging (gdb, anyone?).
->>>>>>> bd6bd6fe0d402916bfcea50f7518f5ff80ec66f2
