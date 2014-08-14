@@ -2,8 +2,8 @@
 layout: post
 title: "executable -> readable"
 description: "Reading a program's contents without read access"
-category: 
-tags: []
+category: reverse engineering 
+tags: [reverse engineering, RE, ptrace, linux, ELF]
 ---
 {% include JB/setup %}
 
@@ -75,3 +75,48 @@ Let's look at some interesting requests:
     PTRACE_{PEEK,POKE}DATA :
         Reads/Sets a value in the tracee's memory at address to/from
         memory at address data.
+
+Immediately we can see a workflow for extracting the ELF from a process'
+address space.
+
+0. Attach to the target process via ptrace,
+1. Obtain the address of the ELF Header,
+2. Determine the size of the ELF Header and its sections, and
+3. Read the necessary memory via ptrace, and write it to a new binary.
+
+### Step 1: Attaching to a process
+
+There are two ways in which ptrace can attach a tracer to a tracee.
+The tracer can either attach themself explicitly by calling 
+ptrace(PTRACE_ATTACH, pid, ...) or by ptrace(PTRACE_SEIZE, pid, ...).
+PTRACE_ATTACH will attach to the process PID, and raise a SIGSTOP in this
+process to halt execution. PTRACE_SEIZE does the same thing but it does not
+raise the SIGSTOP- not as useful for our purpose, as we need to halt execution.
+
+    pid_t tracee_pid = 12345;
+    ptrace(PTRACE_ATTACH, tracee_pid, NULL, NULL);
+    int status;
+    wait(&status)   // Wait until we are informed that proc PID is
+                    // ready to be traced    
+    foo(pid);
+
+
+
+The second way in which a process can be attached to with ptrace is via
+PTRACE_TRACEME. This will inform the parent of the process that it wants to
+be traced, and raises a SIGSTOP on any system calls (including execl) to 
+halt its own execution.
+
+    pid_t tracee_pid = fork();
+    if(!tracee_pid) {
+        // Executed by the CHILD        
+        ptrace(PTRACE_TRACEME, NULL, NULL, NULL);
+    } else {
+        // Executed by the PARENT
+        int status;
+        wait(&status);  // Wait until we are informed that process PID is ready to 
+                        // be traced
+        foo(pid);
+    }
+        
+### Step 2: Obtaining the address of the ELF Header
