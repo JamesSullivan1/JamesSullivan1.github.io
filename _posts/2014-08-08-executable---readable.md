@@ -7,6 +7,9 @@ tags: [reverse engineering, RE, ptrace, linux, ELF]
 ---
 {% include JB/setup %}
 
+_note: this is still a work in progress which I will 
+update as time and interest permit._
+
 Today, I encountered an interesting exercise inspired by the 
 Utumno Wargame by [OverTheWire](http://overthewire.org). An 
 executable ELF file is given to you that you must read the 
@@ -120,3 +123,125 @@ halt its own execution.
     }
         
 ### Step 2: Obtaining the address of the ELF Header
+
+The next step is to determine the location of the ELF 
+header in the process address space. A caveat, of course,
+is that our process stops as soon as execve(2) is called.
+If we examine the output of strace, we see that this is
+actually not far enough into execution; since *we have not
+yet mapped the ELF into the address space*.
+
+Below is the strace output for the `echo` program.
+
+    // Here is where execution has stopped.
+    execve("/usr/bin/echo", ["echo"], [/* 6 vars */]) = 0
+
+    // Note that we haven't even hit `brk` yet, which
+    // is used to modify the location of the program
+    // break.
+    // However, this is calling brk with an invalid
+    // address, which will return the current break.
+    brk(0)                                  = 0x1086000
+
+    // Getting the shared libraries... Not concerning to us.
+    access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+    open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 4
+    fstat(4, {st_mode=S_IFREG|0644, st_size=186704, ...}) = 0
+    mmap(NULL, 186704, PROT_READ, MAP_PRIVATE, 4, 0) = 0x7ff5fa8c3000
+
+            Some lines omitted
+
+    // Here is where we actually load the ELF file.
+    open("/usr/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = 4
+read(4, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\20\1\2\0\0\0\0\0"..., 832) = 832
+
+            Some lines omitted
+
+    // A second call to brk, which once again
+    // just returns the current break.
+    // This is probably a good spot to be.
+    brk(0)                                  = 0x1086000
+
+            Some lines omitted
+
+    // Here is the system calls that are actually
+    // done by the program and not the loader.
+    // Echo is a simple one, just a few calls.
+    write(1, "\n", 1
+    )                       = 1
+    close(1)                                = 0
+
+    // And this is some post-process cleanup.
+    munmap(0x7ff5fa8f0000, 4096)            = 0
+    close(2)                                = 0
+    exit_group(0)                           = ?
+    +++ exited with 0 +++
+
+We need to make sure that we can continue execution until
+we have at least loaded the ELF header, but not so far
+that the program terminates. A good place to do this is
+a few `brk` system calls in. This is a fairly trivial
+task:
+
+    int status;
+    int ret;
+    int brks_left = 2;
+    struct user_regs_struct regs;
+    do {
+        // Step to the next system call entry/exit
+        if(ptrace(PTRACE_SYSCALL, pid, 0, 0)) {
+            return 1;
+        }
+        wait(&status);   
+
+        errno = 0; 
+        // Get the registers of the program,
+        // and check orig_eax == SYS_brk.
+        ptrace(PTRACE_GETREGS, pid, 0, &regs);
+        if(errno) {
+            return 1;
+        }  
+        ret = regs.orig_rax;
+        if(ret == SYS_brk)
+            brks_left--;
+
+    } while(brks_left > 0);
+    // Step once more to exit BRK
+    ptrace(PTRACE_SYSCALL, pid, 0, 0);
+    wait(&status);
+
+    return 0; 
+
+Note that we want to check the value of `orig_eax` at
+each system call. This is because we stop execution 
+as soon as the system call is entered with SIGINT,
+and at this point the register `orig_eax` contains
+the value of eax before the system call was made- 
+which is the code for the system call.
+
+Now that the ELF header is loaded, we need to search
+for it. However, the ELF spec does not require that
+the ELF header is loaded at some constant address,
+and in fact a non-standard program could load it
+at any page-aligned address. A typical range of values
+on an x86 architecture are [0x08048000, 0x08080000]
+and on x86_64, [0x400000, 0x8000000] (and these values
+are not chosen at random, but are attributable to the
+way that linux creates a process address space).
+
+Despite a fairly large search space, this is not
+a difficult task, for two reasons.
+
+1. The ELF header must be page aligned, and
+2. The ELF header _always_ starts with '.ELF'.
+
+The constant '.ELF' (alternatively, \x7f\x45\x4c\x46)
+is what is called the magic field, and it is essentially
+an unambiguous way of marking an address as the start
+of an ELF header.
+
+Of course, it's entirely possible that by some chance,
+we have multiple points in memory where the string
+'\x7f\x45\x4c\x46' occurs, and so it is best to 
+list all of the possible addresses and then individually
+determine which is the actual ELF header.
