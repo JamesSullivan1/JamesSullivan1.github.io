@@ -9,14 +9,14 @@ highlights: true
 # Themes are encouraged to use these universal variables 
 # so be sure to set them if your theme uses them.
 #
-title : InfoSec by James Sullivan
-tagline: Ruminations on information security 
+title : James Sullivan's Blog
+tagline: 
 author :
   name : James Sullivan 
   email : 
   github : JamesSullivan1 
   twitter : _JSullivan_
-  feedbaname : InfoSecByJamesSullivan
+  feedbaname : JamesSullivan
 
 # The production_url is only used when full-domain names are needed
 # such as sitemap.txt 
