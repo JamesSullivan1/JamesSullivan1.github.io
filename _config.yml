@@ -72,6 +72,7 @@ JB :
   #
   about_path: /about.html
   blog_path: /blog.html
+  cv_path: /cv.html
   archive_path: /archive.html
   categories_path : /categories.html
   tags_path : /tags.html
