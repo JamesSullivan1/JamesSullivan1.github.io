@@ -13,6 +13,8 @@ understood only by complicated linking and loading software. The reality
 is that the ELF format is a beautiful and well-defined structure, and
 its rich structure is far from undecipherable. 
 
+<!--break-->
+
 Earlier this year, I had a firm belief that executable formats were
 impossible to analyze, and that modifying them while keeping their
 format as valid was a pipe dream. To prove myself wrong, I created a

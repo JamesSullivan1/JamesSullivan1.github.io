@@ -15,6 +15,8 @@ in Linux, pthreads provides a front-end for the creation of anonymous
 Lightweight Processes (a fancy word for threads), which have their own
 stack, but share a virtual address space with their parent and siblings.
 
+<!--break-->
+
 On Linux, the pthreads library is supported by the clone(2) system call.
 From the man page:
 

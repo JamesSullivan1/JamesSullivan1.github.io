@@ -13,6 +13,8 @@ to you that you must read the process address space of in order to find
 a secret message- the caveat being that the file *only* has execute
 permission, and not read or write.
 
+<!--break-->
+
 Immediately, this takes away the easier solutions, such as strings(1),
 objdump(1), and hexdump(1). However, this ends up being a bigger problem
 than I anticipated, when I attempted to open up gdb...
