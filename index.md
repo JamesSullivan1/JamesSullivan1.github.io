@@ -1,6 +1,6 @@
 ---
 layout: page
-title: InfoSec by James Sullivan 
+title: James Sullivan's Blog
 tagline: Supporting tagline
 ---
 {% include JB/setup %}
@@ -33,3 +33,7 @@ lifestyle.
 * [elfnab](https://github.com/JamesSullivan1/elfnab) is a WIP program to
     recover the ELF binary of a running program or nonreadable binary 
     via ptrace.
+* [inject](https://github.com/JamesSullivan1/inject) is an ELF
+  dissection program that injects a new section into an existing ELF, 
+  redirecting control to this section's data.
+

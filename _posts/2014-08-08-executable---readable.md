@@ -7,9 +7,6 @@ tags: [reverse engineering, RE, ptrace, linux, ELF]
 ---
 {% include JB/setup %}
 
-_note: this is still a work in progress which I will 
-update as time and interest permit._
-
 Today, I encountered an interesting exercise in the Utumno Wargame by
 [OverTheWire](http://overthewire.org). An executable ELF file is given
 to you that you must read the process address space of in order to find
