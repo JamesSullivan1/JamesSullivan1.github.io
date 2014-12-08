@@ -2,8 +2,8 @@
 layout: post
 title: "Pushing the limits of pthreads"
 description: ""
-category: 
-tags: []
+category: pthreads
+tags: [pthreads, multithreading, concurrency, performance]
 ---
 {% include JB/setup %}
 

@@ -3,7 +3,7 @@ layout: post
 title: "executable -> readable"
 description: "Reading a program's contents without read access"
 category: reverse engineering 
-tags: [reverse engineering, RE, ptrace, linux, ELF]
+tags: [reverse engineering, RE, ptrace, linux, ELF, exploitation]
 ---
 {% include JB/setup %}
 

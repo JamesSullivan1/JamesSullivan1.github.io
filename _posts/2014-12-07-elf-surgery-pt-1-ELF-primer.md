@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "ELF Surgery"
+title: "ELF Surgery, Pt. 1: A Primer on ELF"
 description: ""
-category: 
-tags: []
+category: ELF
+tags: [elf, RE, reverse engineering, exploitation, linux]
 ---
 {% include JB/setup %}
 
@@ -20,10 +20,10 @@ impossible to analyze, and that modifying them while keeping their
 format as valid was a pipe dream. To prove myself wrong, I created a
 program that did exactly this.
 [inject](https://github.com/JamesSullivan1/inject) is a program that
-will (mostly) reliably insert into an ELF a new section (lovingly called
-".evil", complete with a snippet of shellcode, and redirect control
-to this new section. In this post I outline how this was accomplished,
-and some of the very nasty difficulties I encountered along the way.
+will (mostly) reliably insert into an ELF a new section, lovingly called
+".evil", and redirect control to this new section's payload. In this
+post I outline how this was accomplished, and some of the inherent
+challenges with modifying a complex binary artifact.
 
 ### A quick primer on ELF
 
@@ -123,7 +123,9 @@ Here is an example of a relatively simple ELF file. This is the 64-bit
 version of `true`, a program which does nothing but return 0. We capture
 this output with the extremely useful `readelf` utility.
 
-    /* Here is the ELF header, describing the overall metadata. */
+This is the ELF Header at the start of the file, describing some basic
+metadata about the contained data.
+
     ELF Header:
       Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
       Class:                             ELF64
@@ -145,8 +147,12 @@ this output with the extremely useful `readelf` utility.
       Number of section headers:         28
       Section header string table index: 27
 
-    /* Below is the section header table. We can spot a few recognizable
-       sections, and many more that most are unfamiliar with. */
+After this, we find the section header table. You can spot a few
+recognizable sections, but a surprising number of them are completely
+foreign to most. In reality, we mostly care about a select few of these,
+but will need to consider almost all of them separately in order to make
+a 'clean' modification.
+
     Section Headers:
       [Nr] Name              Type             Address           Offset
            Size              EntSize          Flags  Link  Info  Align
@@ -212,8 +218,11 @@ this output with the extremely useful `readelf` utility.
       O (extra OS processing required) o (OS specific), p (processor
     specific)
 
-    /* The segments are described below. Note the one-one correspondence
-        of the offset to the virtual address (plus a fixed offset).*/
+Now we see the program header table, describing the segments. Note that
+the file offset and the virtual address are almost in correspondence,
+with the virtual address being offset by one of two fixed values.
+This is, of course, not a requirement, but is a common feature of ELFs.
+
     Program Headers:
       Type           Offset             VirtAddr           PhysAddr
                      FileSiz            MemSiz              Flags  Align
@@ -246,9 +255,17 @@ this output with the extremely useful `readelf` utility.
     0x0000000000605e10
                      0x00000000000001f0 0x00000000000001f0  R      1
 
-    /* Here we can see the mapping from sections to segments. Every
-       section must be in a segment, but it can fall in a few of them,
-       and each segment can have many sections. */
+This following section is a simple mapping of sections into segments.
+Every section is contained in one or more segments. This is purely
+calculated by whether the file offsets of the section and segment
+overlap. 
+
+Since segments describe the semantics of the data at load time, we need
+to preserve these mappings in our modification. Note, for instance, that
+the .text section is in segment 02, which is (from the above table) a
+LOAD segment, which means that the loader will actually map this into
+memory. Messing with this will break the ELF.
+
      Section to Segment mapping:
       Segment Sections...
        00     
@@ -262,5 +279,74 @@ this output with the extremely useful `readelf` utility.
        06     .eh_frame_hdr 
        07     
        08     .init_array .fini_array .jcr .dynamic .got 
+
+It's useful to have a good idea of what a 'nice' ELF looks like when
+you're attempting to dissect one. Though not all ELFs will conform to
+such a standard (it's not very hard to craft an ELF of your own), most
+ELFs are produced by a fairly similar or consistent toolchain which
+results in many of the standard binaries on a Linux system conforming to
+this format.
+
+### The Plan
+
+What we would like to do is to insert a new section into the ELF, with
+executable content, and redirect control at execution time into this
+section. There are many ways to do this, but the way that I've chosen to
+is as follows.
+
+1. Find a suitable location to insert the new section, preferably within
+the existing LOAD segment. I find that the best place for this is
+directly before the '.text' section, but after the '.plt' section (more
+on this later).
+2. Fix up the section header table to make room for this new section,
+and add our new entry. This mostly involves incrementing offsets (we
+may also have to re-align). There's a bit of a gotcha here, which I'll
+come back to later.
+3. Fix up and extend the segment descriptors so that the original
+mappings are preserved, but our new section is in a LOAD segment.
+This is also done by incrementing offsets and sizes, but again we need
+to be cautious of alignment.
+4. Inject the new section's data into its location in the buffer.
+Optionally, inject an instruction at the end of the payload which
+transfers control to the 'right' place; this makes your payload more
+covert if it is desirable.
+5. Fix up the dynamic linking and symbolic entries references to account
+for the new offsets. The same must also be done for offset tables, which
+are unfortunately hard-coded with virtual offsets.
+
+Easy enough, right? In the next post we'll delve into each of these
+steps in greater detail.
+
+-James
+
+### 1: Find the Injection Point
+
+One absolute requirement of this task is that your new section must be
+in a LOAD segment, if you want to execute its contents. This is for a
+fairly simple reason- if it's not a LOAD segment, it won't be mapped
+into the virtual memory. 
+
+The simplest way to go about this is to extend the segment that the
+program text lives in. This includes 'init', 'plt', and, of course,
+'text'. For reliability reasons, the best place to stick your code in is
+right where '.text' starts. Any executable binary has this section, and
+so you know for a fact that it's somewhere in the ELF. The 'plt'
+section, on the other hand, may be omitted. 
+
+The PLT, or the Procedure Linkage Table, is nothing but a table of
+stubs at a known location. These stubs direct control to an entry in the
+GOT (Global Offset Table), which in turn transfers control to some
+corresponding shared library function. This double-indirection accounts
+for the ability to load a shared object almost anywhere in memory,
+giving us a fixed location to call no matter where the actual function
+is. We can dynamically fix up the GOT to point to the actual function's
+location, much easier than fixing up every call to the function.
+
+However, the PLT is only necessary for ELFs which do dynamic relocation,
+and so in the general case it's best to not assume that there is such a
+section.
+
+### 2: Fix up the Section Header Table
+
 
 
