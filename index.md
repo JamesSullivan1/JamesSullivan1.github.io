@@ -1,7 +1,7 @@
 ---
 layout: page
 title: James Sullivan's Blog
-tagline: Supporting tagline
+tagline: 
 ---
 {% include JB/setup %}
 
