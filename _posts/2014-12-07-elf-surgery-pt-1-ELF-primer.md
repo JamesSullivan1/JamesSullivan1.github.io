@@ -3,7 +3,7 @@ layout: post
 title: "ELF Surgery, Pt. 1: A Primer on ELF"
 description: ""
 category: ELF
-tags: [elf, RE, reverse engineering, exploitation, linux]
+tags: [ELF, reverse engineering, exploitation, linux]
 ---
 {% include JB/setup %}
 
