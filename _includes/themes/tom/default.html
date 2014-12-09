@@ -39,9 +39,13 @@
           <a href="http://twitter.com/{{ site.author.twitter }}/">twitter.com/{{ site.author.twitter }}</a><br />
         </p>
       </div>
-      <div class="rss">
-        <a href="http://feeds.feedburner.com/{{ site.author.feedburner }}">
-          <img src="{{ ASSET_PATH }}/images/rss.png" alt="Subscribe to RSS Feed" />
+      <div class="feed">
+          <a href="{{ BASE_PATH }}{{ site.JB.atom_path }}">
+              Subscribe with Atom
+          </a><br />
+
+          <a href="{{ BASE_PATH }}{{ site.JB.rss_path }}">
+              Subscribe with RSS
         </a>
       </div>
     </div>
