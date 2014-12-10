@@ -10,12 +10,15 @@ Academic
 * Graduated from William Aberhart High School with honours - June 2011
 * Current honours student at University of Calgary, Dept. of Computer
   Science. Current GPA is 3.73 / 4.0.
-* Awarded the Jason Lang Scholarship for Academic Excellence - Dec 2013
-* Awarded the Jason Lang Scholarship for Academic Excellence - Dec 2014
 * Member of the University of Calgary Faculty of Science's Dean's List -
   2013-2014
-* Recipient of the University of Calgary Undergraduate Merit Award - 2014
-* Recipient of the University of Calgary McMahon Stadium Society Award - 2014
+* Awarded the Jason Lang Scholarship for academic achievement - Dec 2013
+* Awarded the Jason Lang Scholarship for academic achievement - Dec 2014
+* Recipient of the University of Calgary Undergraduate Merit Award for
+  academic achievement - Dec 2014
+* Recipient of the University of Calgary McMahon Stadium Society Award
+  for academic merit and demonstrated leadership in athletic endeavours
+  - Dec 2014
 * Completed six courses with an A+ mark to date: 
     * CPSC 301 (Large-Scale Software Design)
     * CPSC 313 (Introduction to Computability)
