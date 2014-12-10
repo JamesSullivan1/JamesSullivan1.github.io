@@ -7,43 +7,48 @@ tags: [ELF, reverse engineering, exploitation, linux]
 ---
 {% include JB/setup %}
 
-To many, executable formats (such as ELF or PE) are opaque. Executable
-files are seen as unintelligible sequence of bytes which can be
-understood only by complicated linking and loading software. The reality
-is that the ELF format is a beautiful and well-defined structure, and
-its rich structure is far from undecipherable. 
+Executable file formats (such as ELF or PE) can seem dauntingly opaque
+at a first glance. It's easy to assume that these files are an
+unintelligible sequence of bytes which can be understood only by
+complicated linking and loading software. The reality is that the ELF
+format is a well-designed and well-defined structure, and its rich
+structure is far from undecipherable. 
 
 <!--break-->
 
-Earlier this year, I had a firm belief that executable formats were
-impossible to analyze, and that modifying them while keeping their
-format as valid was a pipe dream. To prove myself wrong, I created a
-program that did exactly this.
+Earlier this year, I had led myself to believe that executable formats
+were undecipherable black boxes of machine code. The thought of
+modifying them while keeping their format as valid was a pipe dream. Of
+course, this is far from the truth- and so to prove myself wrong, I
+created a program that did exactly this.
 [inject](https://github.com/JamesSullivan1/inject) is a program that
-will (mostly) reliably insert into an ELF a new section, lovingly called
-".evil", and redirect control to this new section's payload. In this
-post I outline how this was accomplished, and some of the inherent
-challenges with modifying a complex binary artifact.
+will (mostly) reliably inject a new section into an ELF and redirect
+control to this new section's payload. This careful modification leaves
+the ELF in an otherwise pristine state, and can transfer control back to
+the original entry point of the ELF for covert operation. In this post I
+outline how this was accomplished, and some of the inherent challenges
+with modifying a complex binary artifact.
 
 ### A quick primer on ELF
 
 Before we start, it's useful to have a reference for the ELF format.
-ELF stands for Executable, Linkable Format, and is the lingua franca of
-UNIX executables. The format is, in my opinion, quite beautiful, and is
-for the most part well documented.
+ELF stands for Executable and Linkable Format, and is the lingua franca
+of UNIX executables. A number of other executable formats exist and are
+supported by UNIX-like systems, but for the most part, all programs are
+ELFs. The format is quite beautiful, and for the most part well
+documented. The ELF is also unique in its flexibility- there are many
+ways to put together an ELF. This diversity, in fact, is a challenge to
+overcome for a task such as this.
 
-The ELF consists of a number of headers, which records the metadata
-of the file. The ELF Header describe the file itself, and is always
-the first thing in an ELF File. The Program Header Table usually 
-follows immediately after this, and documents the way in which the ELF
-should be loaded into memory. The actual bytes of the ELF follow this
-table, and at the end (or close to it), is the Section header, which 
-describes the familiar sections of the ELF's data such as `.data` and
-`.text`. 
+The ELF consists of a number of headers, which records the metadata of
+the file. The ELF Header describe the file itself, and is always the
+first set of bytes in an ELF. The Program Header Table usually follows
+closely after this, and documents the way in which the ELF should be
+loaded into memory. The actual bytes of the ELF follow this table, and
+at the end (or close to it), is the Section header, which describes the
+familiar sections of the ELF such as `.data` and `.text`. 
 
 #### The ELF header
-
-Without further ado, here is the ELF header itself.
 
     #define EI_NIDENT 16
      
@@ -65,10 +70,10 @@ Without further ado, here is the ELF header itself.
     } ElfN_Ehdr;
 
 This relatively simple data structure describes the metadata of the ELF,
-including its type, bits, and some other identification bits. More
-pertinent for our task is the descriptors of the program and section 
-header tables- we'll come back to this later, but for now note that this
-is where all of the metadata for these tables (their location and their
+including its type, bits, and some other identification. More pertinent
+for our task is the descriptors of the program and section header
+tables- we'll come back to this later, but for now note that this is
+where all of the metadata for these tables (their location and their
 size) is held.
 
 #### Program Headers
@@ -84,18 +89,18 @@ size) is held.
         uint32_t   p_align;  /* The alignment in file and memory */
     } Elf32_Phdr;
 
-Each program header is a description of a segment. A segment is a region
-of the file that contains one or more sections, and describes how this
-range of bytes in the file ought to be mapped into memory when we load
-the executable. We can generally ask for a 1-1 mapping of the file to
-memory, which makes our task much more simple. Some segments need not
-be loaded into memory at all- in fact we only load segments of type
-PT\_LOAD into memory. Of course, we'll also need to pay attention to the
-other segment types- for instance, PT\_DYNAMIC, which is used to specify
-a region that will affect the dynamic linking of the program.
+Each program header is a description of a segment, a region of the file
+that contains one or more sections. Each program header describes how
+its segment's range of bytes in the file ought to be mapped into memory
+when we load the executable. Generally there is a 1-1 mapping of the
+byte offset of the file to the byte offset in memory, but this is not
+always the case. Some segments need not be loaded into memory at all- in
+fact we only load segments of type PT\_LOAD into memory. Of course,
+we'll also need to pay attention to the other segment types- for
+instance, PT\_DYNAMIC, which is used to specify a region that will
+affect the dynamic linking of the program.
 
 #### Section Headers
-
 
     typedef struct {
         uint32_t   sh_name;      /* Index into a string table */
@@ -112,19 +117,20 @@ a region that will affect the dynamic linking of the program.
     } Elf32_Shdr;
 
 Section headers describe (surprisingly enough) the sections of the ELF
-file, which are the most familiar to most people. Sections collectively
-contain every last byte of data in the ELF, separated by its semantics.
+file, which are perhaps the most familiar artifacts of an ELF. Sections
+collectively contain every last byte of data in the ELF (excluding the
+headers), and the section that a byte lives in describes its semantics.
 Most modern ELF files have upwards of 30 sections, each of which has
-slightly unique semantics. The most familiar sections include `.text`
+slightly unique properties. The most familiar sections include `.text`
 which contains executable instructions, and `.data` which contains
 initialized global data.
 
-Here is an example of a relatively simple ELF file. This is the 64-bit
-version of `true`, a program which does nothing but return 0. We capture
-this output with the extremely useful `readelf` utility.
+Here is an example of a simple ELF file- the 64-bit version of `true`, a
+program which only returns 0. We capture this output with the extremely
+useful `readelf` utility.
 
 This is the ELF Header at the start of the file, describing some basic
-metadata about the contained data.
+metadata about the ELF.
 
     ELF Header:
       Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
@@ -149,9 +155,10 @@ metadata about the contained data.
 
 After this, we find the section header table. You can spot a few
 recognizable sections, but a surprising number of them are completely
-foreign to most. In reality, we mostly care about a select few of these,
-but will need to consider almost all of them separately in order to make
-a 'clean' modification.
+foreign. In reality, we mostly care about a select few of these for our
+task (and a number of them have almost no function), but will need to
+consider almost all of them separately in order to make a 'clean'
+modification.
 
     Section Headers:
       [Nr] Name              Type             Address           Offset
@@ -220,8 +227,8 @@ a 'clean' modification.
 
 Now we see the program header table, describing the segments. Note that
 the file offset and the virtual address are almost in correspondence,
-with the virtual address being offset by one of two fixed values.
-This is, of course, not a requirement, but is a common feature of ELFs.
+with the virtual address being offset by one of two fixed values.  This
+is, of course, not a requirement, but is a common feature of an ELF.
 
     Program Headers:
       Type           Offset             VirtAddr           PhysAddr
@@ -291,17 +298,19 @@ this format.
 
 What we would like to do is to insert a new section into the ELF, with
 executable content, and redirect control at execution time into this
-section. There are many ways to do this, but the way that I've chosen to
-is as follows.
+section. The simplest way to do this is to add an entirely new LOAD
+segment at the end of the file, but I've opted to expand the segment
+containing the .text section for two reasons- one, it's a more covert
+insertion which leaves the ELF in a fairly 'normal' state, and two, it's
+more interesting.
 
 1. Find a suitable location to insert the new section, preferably within
-the existing LOAD segment. I find that the best place for this is
-directly before the '.text' section, but after the '.plt' section (more
-on this later).
+the existing LOAD segment. I've opted to place my new section before the
+`.text` section, which any executable ELF will have. 
 2. Fix up the section header table to make room for this new section,
 and add our new entry. This mostly involves incrementing offsets (we
-may also have to re-align). There's a bit of a gotcha here, which I'll
-come back to later.
+may also have to re-align). There's a bit of a gotcha here involving the
+location of the table itself, which I'll come back to later.
 3. Fix up and extend the segment descriptors so that the original
 mappings are preserved, but our new section is in a LOAD segment.
 This is also done by incrementing offsets and sizes, but again we need
