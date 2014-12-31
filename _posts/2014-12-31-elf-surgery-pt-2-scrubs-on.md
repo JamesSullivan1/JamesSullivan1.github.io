@@ -7,6 +7,9 @@ tags: [elf, RE, reverse engineering, exploitation, linux]
 ---
 {% include JB/setup %}
 
+*Be sure to read the [Previous Post]({{ BASE_PATH }}/blog/2014/12/elf-surgery-pt-1-ELF-primer/)
+for background on the ELF format.*
+
 In this series, we develop a technique to reliably modify an ELF
 executable, inserting a new executable section into it and transferring
 control to the section. The last post detailed the ELF format, and we
