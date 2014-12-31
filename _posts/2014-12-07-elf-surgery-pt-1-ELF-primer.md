@@ -323,7 +323,7 @@ covert if it is desirable.
 for the new offsets. The same must also be done for offset tables, which
 are unfortunately hard-coded with virtual offsets.
 
-Easy enough, right? In the next post we'll delve into each of these
+Easy enough, right? In the [next post]({{ BASE_PATH }}/blog/2014/12/elf-surgery-pt-2-scrubs-on) we'll delve into each of these
 steps in greater detail.
 
 -James
