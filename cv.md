@@ -9,7 +9,7 @@ Academic
 -------
 * Graduated from William Aberhart High School with honours - June 2011
 * Current honours student at University of Calgary, Dept. of Computer
-  Science. Current GPA is 3.73 / 4.0.
+  Science. Current GPA is 3.78 / 4.0.
 * Member of the University of Calgary Faculty of Science's Dean's List -
   2013-2014
 * Awarded the Jason Lang Scholarship for academic achievement - Dec 2013
@@ -19,11 +19,13 @@ Academic
 * Recipient of the University of Calgary McMahon Stadium Society Award
   for academic merit and demonstrated leadership in athletic endeavours
   - Dec 2014
-* Completed six courses with an A+ mark to date: 
+* Completed eight courses with an A+ mark to date: 
     * CPSC 301 (Large-Scale Software Design)
     * CPSC 313 (Introduction to Computability)
     * CPSC 331 (Data Structures and Algorithms)
     * CPSC 359 (Computing Machinery II)
+    * CPSC 413 (Design & Analysis of Algorithms I)
+    * CPSC 457 (Principles of Operating Systems)
     * PMAT 418 (Introduction to Cryptography)
     * PHIL 379 (Logic II)
 
