@@ -60,3 +60,9 @@ Certificates in a Java Keystore
 * [elfnab](https://github.com/JamesSullivan1/elfnab) - Creates a
   readable copy of a non-readable but executable ELF via ptrace.
 
+Open-Source Contributions
+-----------
+* linux (kvm) - [Added check for RH=1 in kvm_set_msi_irq](http://www.spinics.net/lists/kvm/msg114656.html)
+    (Passed initial reviews)
+* radare2 - [Fixed a pointer invalidation leading to illegal free()](https://github.com/radare/radare2/commit/69c4a80e67adb7f420a5c13ba1ccf5bcdf57767a)
+
