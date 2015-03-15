@@ -2,7 +2,7 @@
 layout: post
 title: "Understanding Message Signalled Interrupts"
 description: ""
-category: 
+category: interrupts
 tags: linux, interrupts, kernel, kvm
 ---
 {% include JB/setup %}
