@@ -41,12 +41,16 @@ Erik Nilsen, Lewis and Clark College. Extended Abstract in the 7th
 Workshop on Cyber Security Experimentation and Test (CSET 2014), held in
 conjunction with USENIX Security 2014, August 18, 2014
 
-2. [Teaching Cybersecurity Analysis Skills in the
-   Cloud](http://sigcse2015.sigcse.org/) 
+2. [Teaching Cybersecurity Analysis Skills in the Cloud](http://sigcse2015.sigcse.org/) 
 Richard Weiss and Stefan Boesen, The Evergreen State College; **James
 Sullivan** and Michael E.  Locasto, University of Calgary; Jens Mache
 and Erik Nilsen, Lewis and Clark College. In Proceedings of the ACM
 Special Interest Group on Computer Science Education (SIGCSE 2015).
+
+3. [Poster: Defining a Model for Defense-in-Depth](http://www.ieee-security.org/TC/SP2015/#)
+**James Sullivan** and Michael E. Locasto, University of Calgary. 36th IEEE
+Symposium on Security and Privacy (IEEE S&P 2015), Poster Session.
+
 
 Projects
 --------
