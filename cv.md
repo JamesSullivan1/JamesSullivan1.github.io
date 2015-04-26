@@ -22,6 +22,7 @@ Academic
 * Completed eight courses with an A+ mark to date: 
     * CPSC 301 (Large-Scale Software Design)
     * CPSC 313 (Introduction to Computability)
+    * CPSC 329 (Explorations in Information Security & Privacy)
     * CPSC 331 (Data Structures and Algorithms)
     * CPSC 359 (Computing Machinery II)
     * CPSC 413 (Design & Analysis of Algorithms I)
@@ -66,7 +67,7 @@ Certificates in a Java Keystore
 
 Open-Source Contributions
 -----------
-* linux (kvm) - [Added check for RH=1 in kvm_set_msi_irq](http://www.spinics.net/lists/kvm/msg114656.html)
-    (Passed initial reviews)
+* linux (kvm) - [kvm: irq_comm: Added check for RH=1 in kvm_set_msi_irq](http://www.spinics.net/lists/kvm/msg114915.html)
+* QEMU - [apic: Implement MSI RH Bit handling, lowpri IRQ arbitration](https://lists.gnu.org/archive/html/qemu-devel/2015-04/msg00543.html)
 * radare2 - [Fixed a pointer invalidation leading to illegal free()](https://github.com/radare/radare2/commit/69c4a80e67adb7f420a5c13ba1ccf5bcdf57767a)
 
