@@ -22,6 +22,8 @@ handled as soon as the kernel receives the signal request. The fact that
 these signal handlers can start running almost anywhere in the code is
 where people run into issues with them.
 
+<!--break-->
+
 Consider a simple handler that logs the occurrence of a signal.
 
     void handler(int sig)
