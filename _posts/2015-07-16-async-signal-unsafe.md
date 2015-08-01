@@ -96,12 +96,12 @@ surface. Take a look at the call stack for this program after it hangs:
     #2  <signal handler called>
     #3  0x6567617373656d20 in ?? ()
 
-The top stack frame is the interesting one here. `lock' should be a huge
-red flag for any signal handler, and rightfully so. Locks are extremely
-unsafe to use in any signal handler and are a very common way to
-deadlock a program. The interesting part is that even if you use the
-locks `correctly' and always acquire/release them correctly, you can
-still cause deadlock. Consider this case:
+The top stack frame is the interesting one here. The word 'lock' should
+be a huge red flag for any signal handler. Locks are extremely unsafe to
+use in any signal handler and are a very common way to deadlock a
+program. The interesting part is that even if you use the locks
+'correctly' and always acquire/release them correctly, you can still
+cause deadlock. Consider this case:
 
     void handler(int sig)
     {
@@ -119,17 +119,17 @@ still cause deadlock. Consider this case:
         ...
     }
 
-Consider what happens when a signal is received by `main' after the lock
+Consider what happens when a signal is received by 'main' after the lock
 is acquired. The handler will call lock() again, and deadlock with
 itself. The interesting thing here is that we didn't even need to make
 any extra threads to lock up the program, and a glance at the source of
-`main' would tell us that this is infallible.
+'main' would tell us that this is infallible.
 
 The easy answer often given to this issue is to never use locks in
 signal handlers. But as we saw in the simple case of printf,
 there are many useful functions which use internal locks! Thankfully,
 POSIX has been kind enough to define a list of functions that we can
-always use in a signal handler. We call these `async-signal-safe', in
+always use in a signal handler. We call these 'async-signal-safe', in
 that they are safe to use within an asyncrhonous signal handler. The
 list is as follows:
 
@@ -154,22 +154,22 @@ uname() unlink() utime() wait() waitpid() write()
 
 Which seems like quite the list, but is actually a pretty small piece of
 the list of POSIX functions. Note the lack of some of the major ones,
-such as our friend `printf', or _any_ of the pthreads functions.
+such as our friend 'printf', or _any_ of the pthreads functions.
 (pthreads and signals are known to play very poorly together). Perhaps
 the best advice, then, is to keep signal handlers simple and make sure
 that you don't call anything that isn't async-signal-unsafe.
 
 There is, however, one dirty secret that can help you log to your
 heart's content in a signal handler. Note that the list above contains
-the `sigprocmask' function. From the man page of this function:
+the 'sigprocmask' function. From the man page of this function:
 
        sigprocmask — examine and change blocked signals
 
-Interesting. What happens if we block signals in a `critical' section?
-It turns out that this is enough to prevent all of the nasty
-interactions that usually happen with async-signal-unsafe functions.
-Seems great, right? With this, we could define a signal-safe lock as
-follows:
+Interesting. What happens if we block signals in a 'critical'
+(overloading the term) section?  It turns out that this is enough to
+prevent all of the nasty interactions that usually happen with
+async-signal-unsafe functions.  Seems great, right? With this, we could
+define a signal-safe lock as follows:
 
     int signal_lock(lock_t *l, sigset_t *save)
     {
@@ -193,7 +193,7 @@ okay for very simple programs, but as I mentioned earlier, many large
 programs use signals heavily. This sort of thing isn't acceptable in
 these contexts.
 
-At the end of the day, it's probably `better' to not use
+At the end of the day, it's probably 'better' to not use
 async-signal-unsafe functions or locks at all in your code. (Instead,
 try to just use the limited set of functions, use lock-free data
 structures, etc). If this isn't feasible (and sometimes it isn't), it's
