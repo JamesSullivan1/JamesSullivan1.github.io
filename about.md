@@ -11,19 +11,20 @@ Bio
 James Sullivan is a student of Computer Science, at the University of
 Calgary, with a focus on Information Security. He enjoys a wide
 range of study areas, primarily in systems design and programming,
-cryptography, foundational mathematics, logic, and network security.
+cryptography, mathematics, logic, and network security.
 
-James is involved with research in his field through the [Trustworthy
-Systems Group](http://tsg.cpsc.ucalgary.ca/), where he is working on a
-foundational model for Defense in Depth and the problem of secure
-mechanism arrangement. He also investigates the inability for reliable
-composition of security mechanisms and the emergent properties in a
-modern, complex system. 
+James is involved with a computer security research group, the
+[Trustworthy Systems Group](http://tsg.cpsc.ucalgary.ca/). His work
+focuses on improving our understanding of why it is difficult to create
+reliable and secure complex systems, and ways that we can arrange our
+systems to avoid interference between its moving parts. He is also
+currently working on an undergraduate thesis with Dr. John Aycock, in
+which he aims to develop better automation techniques for cache-level
+side channel attack discovery and execution.
 
-In his abundance of free time, James also practises and teaches Wado Ryu
-Karate, and holds a 2nd Degree Black belt within the Japanese Karatedo
-Federation. His other interests include music, cooking, hiking, skiing
-and snowboarding, and travel.
+In his abundance of free time, James also practises and teaches Karate,
+and holds a 3rd Degree Black belt from the JKF Wadokai. His other
+interests include music, cooking, hiking, skiing, and travel.
 
 [Curriculum Vitae]({{ BASE_PATH }}{{site.JB.cv_path}})
 
