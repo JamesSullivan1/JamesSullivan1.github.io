@@ -17,14 +17,15 @@ Academic
 * Recipient of the University of Calgary Undergraduate Merit Award for
   academic achievement - Dec 2014
 * Recipient of the University of Calgary McMahon Stadium Society Award
-  for academic merit and demonstrated leadership in athletic endeavours
-  - Dec 2014
-* Completed eight courses with an A+ mark to date: 
+  for academic merit and demonstrated leadership in athletic endeavours -
+  Dec 2014
+* Completed the following courses with an A+ mark: 
     * CPSC 301 (Large-Scale Software Design)
     * CPSC 313 (Introduction to Computability)
     * CPSC 329 (Explorations in Information Security & Privacy)
     * CPSC 331 (Data Structures and Algorithms)
     * CPSC 359 (Computing Machinery II)
+    * CPSC 411 (Compiler Construction & Design)
     * CPSC 413 (Design & Analysis of Algorithms I)
     * CPSC 457 (Principles of Operating Systems)
     * PMAT 418 (Introduction to Cryptography)
@@ -48,18 +49,18 @@ Sullivan** and Michael E.  Locasto, University of Calgary; Jens Mache
 and Erik Nilsen, Lewis and Clark College. In Proceedings of the ACM
 Special Interest Group on Computer Science Education (SIGCSE 2015).
 
-3. [Poster: Defining a Model for Defense-in-Depth](http://www.ieee-security.org/TC/SP2015/#)
-**James Sullivan** and Michael E. Locasto, University of Calgary. 36th IEEE
-Symposium on Security and Privacy (IEEE S&P 2015), Poster Session.
+3. [A Structured Approach to Student-Discovered Bugs and Vulnerability Disclosure](http://tsg.cpsc.ucalgary.ca/)
+**James Sullivan** and Michael E. Locasto, University of Calgary. The
+Colloquium for Information Systems Security Education 2015.
 
+4. [Defining a Model for Defense-in-Depth](https://www.acsac.org/2015/workshops/law/)
+**James Sullivan** and Michael E. Locasto, University of Calgary. The
+ACSAC Layered Assurance Workshop 2015.
 
 Projects
 --------
 * [scapyHunt](https://github.com/JamesSullivan1/scapyHunt) - Network
   security exercises in an environment simulated by handcrafted packets
-* [JWK_Extractor](https://github.com/JamesSullivan1/JWK_Extractor) -
-  Extracts JSON formatted JWK-Compliant information from PKI
-Certificates in a Java Keystore
 * [inject](https://github.com/JamesSullivan1/inject) - Injects a new
   section into an ELF binary, redirecting control to the payload.
 * [elfnab](https://github.com/JamesSullivan1/elfnab) - Creates a
