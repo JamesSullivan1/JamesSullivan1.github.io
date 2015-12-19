@@ -28,6 +28,8 @@ Academic
     * CPSC 411 (Compiler Construction & Design)
     * CPSC 413 (Design & Analysis of Algorithms I)
     * CPSC 457 (Principles of Operating Systems)
+    * CPSC 526 (Network Systems Security)
+    * CPSC 527 (Computer Viruses & Malware)
     * PMAT 418 (Introduction to Cryptography)
     * PHIL 379 (Logic II)
 
