@@ -8,8 +8,8 @@ description: "Curriculum Vitae"
 Academic
 -------
 * Graduated from William Aberhart High School with honours - June 2011
-* BSc. Hon., University of Calgary, Dept. of Computer Science - May
-  2016. (Graduating GPA was 3.91 / 4.0).
+* BSc. Hon., University of Calgary, Dept. of Computer Science - May 2016.
+  (Graduating GPA was 3.91 / 4.0).
 * Member of the University of Calgary Faculty of Science's Dean's List -
   2013-2015
 * Awarded the Jason Lang Scholarship for academic achievement - 2013,
