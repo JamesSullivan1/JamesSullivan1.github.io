@@ -54,6 +54,7 @@ Indicating that the address `0xdeadbeef` is in function `foo` at offset
 ## Prerequisites
 
 We need a couple of things in place for this to work:
+
 * A binary that is not stripped of symbols, and
 * A means to access the binary's symbol and string tables.
 
@@ -175,6 +176,7 @@ the most efficient way to do this, since we have to scan *every* symbol,
 and since not every symbol is even a function!
 
 There are two optimizations we can do here:
+
 * Filter out entries in the symbol table which are not functions, and
 * Sort the entries in the symbol table to accelerate the search from
   O(n) to O(lg n).
