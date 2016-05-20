@@ -45,9 +45,9 @@ MSI data to their allocated memory mapped I/O address, and the APIC
 to determine which interrupt it should trigger on which Local APICs
 (which are generally one-one with the CPUs in the system).
 
-''Aside - Calling the MSI message a 'data' message is a bit of a
+(Aside -- Calling the MSI message a 'data' message is a bit of a
 misnomer. MSI messages cannot carry any data beyond the details of how
-the interrupt should be delivered.'' 
+the interrupt should be delivered.)
 
 An MSI-capable PCI device maintains two registers- the Message Data
 Register and the Message Address Register. The Data Register contains
@@ -112,7 +112,6 @@ Redirection Hint bit. According to the IA32
 (manual)[http://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-system-programming-manual-325384.pdf],
 this bit has the following semantics:
 
-''
     * When RH is 0, the interrupt is directed to the processor listed
       in the Destination ID field.
     * When RH is 1 and the physical destination mode is used, the
@@ -127,7 +126,6 @@ this bit has the following semantics:
       then Destination ID field must not be set to FFH; the processors 
       identified with this field must be present and enabled to receive 
       the interrupt.
-''
 
 In other words, the RH bit should just make the delivery go to the
 lowest priority CPU when logical destination mode is used. What they
