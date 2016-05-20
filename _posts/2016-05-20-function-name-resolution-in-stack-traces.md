@@ -7,7 +7,7 @@ tags: [debugging]
 ---
 {% include JB/setup %}
 
-Lately I've been writing an [https://www.github.com/JamesSullivan1/os](OS)
+Lately I've been writing an [OS](https://www.github.com/JamesSullivan1/os)
 for fun. One of the first things I wanted was a decent stack trace
 routine which would help debugging any kernel panics and bugs.
 
