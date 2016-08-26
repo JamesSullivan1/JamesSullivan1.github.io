@@ -15,35 +15,31 @@ getting back from the allocator was mapped as readable only, no matter
 what flags I passed in!
 
 This strange bug popped up during a major refactoring of my code. During
-this refactoring, I made the completely arbitrary decision to change a
-method's parameter ordering; `slab_getpages(flags_t flags, unsigned int
-page_order)` became `slab_getpages(unsigned int page_order, flags_t
-flags)`. For context, this particular method is to allocate a set of
-`1<<page_order` pages and map them into linear memory with the given
-flags. You might already see where this is going.
+this refactoring, I decided to change a method's parameter ordering;
+`slab_getpages(flags_t flags, unsigned int page_order)` became
+`slab_getpages(unsigned int page_order, flags_t flags)`. For context,
+this particular method is to allocate a set of `1<<page_order` pages and
+map them into linear memory with the given flags. You might already see
+where this is going.
 
 Turns out that I forgot to change one of the invocations of
 `slab_getpages`, and so I ended up making a call to `slab_getpages` with
-utter nonsense for arguments. Give me `1<<$SOME_RANDOM_BITMASK` pages
-and map them with `$RANDOM_INTEGER` flags, please! Despite the fact that
-this was a one-line fix, it took me hours to figure out the issue.
-
-Why was this bug possible, and why didn't my compiler tell me that I had
-swapped two parameters of supposedly distinct types? Well, because I
-made the mistake of using typedefs for type safety. Don't make the same
-mistake I did!
+the arguments reversed. Now, your compiler would normally be able to
+tell you when you pass arguments of the wrong type to a function. 
+However, in this nasty case, since `flags_t` was just a typedef for
+`unsigned int`, the compiler thought that both arguments were the same
+type and raised no warning!
 
 For the unfamiliar, the `typedef` keyword allows the programmer to
 specify an alias for another data type. For example, you can put a
 `typedef unsigned int uint;` in your source and can henceforth just type
 `uint` instead of `unsigned int`.
 
-This is useful for a few reasons. For example, it's nice to be able to
-type `foo` instead of `struct foo` for every `foo` you have (`typedef
-struct foo foo;` will do the trick). Typedefs are also used by C
-libraries extensively, giving us convenient names such as `uint64_t`
-that we can be sure to have some behaviour or property (here, being
-unsigned and 64 bits wide).
+Generally speaking, typedefs exist for programmer convenience and
+readability (a common example here is the common practice of declaring
+`typedef struct fooStruct fooStruct` so that you can simply declare
+`fooStruct x`). Typedefs are also used by libraries to define types of
+specific sizes or properties, such as `size_t` or `uint32_t`.
 
 What typedefs cannot do is enforce type safety, because *all typedefs
 are is a text alias*. When you declare `typedef unsigned int flags_t;`
@@ -59,10 +55,10 @@ you're porting `stdint.h` and need a new `uint32_t`).
     typedef unsigned int flags_t; // BAD BAD BAD
     typedef struct { unsigned int flags; } flags_t; // GOOD!
 
-Sure, you have to do a bit of extra work when you want to change flags,
-since you have to access the internal variable. But it's absolutely
-worth it because your compiler can now tell you when you have
-accidentally switched your `flag_t` and your `unsigned int`.
+Sure, you have to do a bit of extra work when you use `flags_t`, since
+you have to access the internal variable. But it's absolutely worth it
+because your compiler can now tell you when you have accidentally
+switched your `flag_t` and your `unsigned int`.
 
 I hope that after reading this, you won't waste hours of your life on
 silly things like this. typedef is a useful tool, but know its
