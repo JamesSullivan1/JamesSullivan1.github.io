@@ -16,22 +16,22 @@ what flags I passed in!
 
 This strange bug popped up during a major refactoring of my code. During
 this refactoring, I made the completely arbitrary decision to change a
-method's parameter ordering; `slab_getpages(flags, page_order)` became
-`slab_getpages(page_order, flags)`.
-
-For context, this particular method is to allocate a set of
+method's parameter ordering; `slab_getpages(flags_t flags, unsigned int
+page_order)` became `slab_getpages(unsigned int page_order, flags_t
+flags)`. For context, this particular method is to allocate a set of
 `1<<page_order` pages and map them into linear memory with the given
 flags. You might already see where this is going.
 
 Turns out that I forgot to change one of the invocations of
-`slab_getpages`, and so I was making a call with utter nonsense. Give me
-`1<<$SOME_RANDOM_BITMASK` pages and map them with `$RANDOM_INTEGER`
-flags, please! Simple mistake, simple fix, but it was surprisingly hard
-to find out where I made the mistake.
+`slab_getpages`, and so I ended up making a call to `slab_getpages` with
+utter nonsense for arguments. Give me `1<<$SOME_RANDOM_BITMASK` pages
+and map them with `$RANDOM_INTEGER` flags, please! Despite the fact that
+this was a one-line fix, it took me hours to figure out the issue.
 
-Why was it so easy to make this mistake? Well, because I made the
-mistake of using typedefs for type safety, and I want the world to know
-about this and stop using typedefs like this!
+Why was this bug possible, and why didn't my compiler tell me that I had
+swapped two parameters of supposedly distinct types? Well, because I
+made the mistake of using typedefs for type safety. Don't make the same
+mistake I did!
 
 For the unfamiliar, the `typedef` keyword allows the programmer to
 specify an alias for another data type. For example, you can put a
